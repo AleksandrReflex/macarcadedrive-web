@@ -1,5 +1,10 @@
 import Phaser from "phaser";
 
+function assetPath(fileName: string): string {
+  const baseUrl = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
+  return `${baseUrl}assets/${fileName}`;
+}
+
 export const AssetCatalog = {
   dojaCarRear: "doja_car_rear",
   dojaCarRearB: "doja_car_rear_b",
@@ -140,48 +145,48 @@ export const ThemeConfig = {
 } as const;
 
 const AssetFileMap: Record<string, string | null> = {
-  [AssetCatalog.dojaCarRear]: "/assets/doja_car_rear.png",
-  [AssetCatalog.dojaCarRearB]: "/assets/doja_car_rear_b.png",
-  [AssetCatalog.dojaCarLeft]: "/assets/doja_car_left.png",
-  [AssetCatalog.dojaCarRight]: "/assets/doja_car_right.png",
-  [AssetCatalog.dojaCarCrash]: "/assets/doja_car_crash.png",
-  [AssetCatalog.dojaModelA]: "/assets/doja_model_a.png",
-  [AssetCatalog.dojaModelB]: "/assets/doja_model_b.png",
+  [AssetCatalog.dojaCarRear]: assetPath("doja_car_rear.png"),
+  [AssetCatalog.dojaCarRearB]: assetPath("doja_car_rear_b.png"),
+  [AssetCatalog.dojaCarLeft]: assetPath("doja_car_left.png"),
+  [AssetCatalog.dojaCarRight]: assetPath("doja_car_right.png"),
+  [AssetCatalog.dojaCarCrash]: assetPath("doja_car_crash.png"),
+  [AssetCatalog.dojaModelA]: assetPath("doja_model_a.png"),
+  [AssetCatalog.dojaModelB]: assetPath("doja_model_b.png"),
 
-  [AssetCatalog.roanCarRear]: "/assets/roan_car_rear_copy.png",
-  [AssetCatalog.roanCarRearB]: "/assets/roan_car_rear_b_copy.png",
-  [AssetCatalog.roanCarLeft]: "/assets/roan_car_left_copy.png",
-  [AssetCatalog.roanCarRight]: "/assets/roan_car_right_copy.png",
-  [AssetCatalog.roanCarCrash]: "/assets/roan_car_crash_copy.png",
-  [AssetCatalog.roanModelA]: "/assets/roan_model_a.png",
-  [AssetCatalog.roanModelB]: "/assets/roan_model_b.png",
+  [AssetCatalog.roanCarRear]: assetPath("roan_car_rear_copy.png"),
+  [AssetCatalog.roanCarRearB]: assetPath("roan_car_rear_b_copy.png"),
+  [AssetCatalog.roanCarLeft]: assetPath("roan_car_left_copy.png"),
+  [AssetCatalog.roanCarRight]: assetPath("roan_car_right_copy.png"),
+  [AssetCatalog.roanCarCrash]: assetPath("roan_car_crash_copy.png"),
+  [AssetCatalog.roanModelA]: assetPath("roan_model_a.png"),
+  [AssetCatalog.roanModelB]: assetPath("roan_model_b.png"),
 
-  [AssetCatalog.trafficCar01]: "/assets/traffic_car_01.png",
-  [AssetCatalog.trafficCar02]: "/assets/traffic_car_02.png",
-  [AssetCatalog.trafficCar03]: "/assets/traffic_car_03.png",
-  [AssetCatalog.trafficCar04]: "/assets/traffic_car_04.png",
-  [AssetCatalog.trafficCar05]: "/assets/traffic_car_05.png",
-  [AssetCatalog.trafficCar06]: "/assets/traffic_car_06.png",
-  [AssetCatalog.trafficCar07]: "/assets/traffic_car_07.png",
-  [AssetCatalog.trafficCar08]: "/assets/traffic_car_08.png",
-  [AssetCatalog.trafficCar09]: "/assets/traffic_car_09.png",
+  [AssetCatalog.trafficCar01]: assetPath("traffic_car_01.png"),
+  [AssetCatalog.trafficCar02]: assetPath("traffic_car_02.png"),
+  [AssetCatalog.trafficCar03]: assetPath("traffic_car_03.png"),
+  [AssetCatalog.trafficCar04]: assetPath("traffic_car_04.png"),
+  [AssetCatalog.trafficCar05]: assetPath("traffic_car_05.png"),
+  [AssetCatalog.trafficCar06]: assetPath("traffic_car_06.png"),
+  [AssetCatalog.trafficCar07]: assetPath("traffic_car_07.png"),
+  [AssetCatalog.trafficCar08]: assetPath("traffic_car_08.png"),
+  [AssetCatalog.trafficCar09]: assetPath("traffic_car_09.png"),
 
-  [AssetCatalog.backgroundSky]: "/assets/bg_sky.png",
-  [AssetCatalog.groundGrassArcadePink]: "/assets/road_grass.png",
-  [AssetCatalog.backgroundCity]: "/assets/bg_city.png",
-  [AssetCatalog.roadAsphalt]: "/assets/road_asphalt.png",
-  [AssetCatalog.roadLane]: "/assets/road_lane.png",
-  [AssetCatalog.roadShoulder]: "/assets/road_shoulder.png",
+  [AssetCatalog.backgroundSky]: assetPath("bg_sky.png"),
+  [AssetCatalog.groundGrassArcadePink]: assetPath("road_grass.png"),
+  [AssetCatalog.backgroundCity]: assetPath("bg_city.png"),
+  [AssetCatalog.roadAsphalt]: assetPath("road_asphalt.png"),
+  [AssetCatalog.roadLane]: assetPath("road_lane.png"),
+  [AssetCatalog.roadShoulder]: assetPath("road_shoulder.png"),
 
-  [AssetCatalog.uiLogoMac]: "/assets/ui_logo_mac.png",
-  [AssetCatalog.uiStartButton]: "/assets/ui_start_button.svg",
+  [AssetCatalog.uiLogoMac]: assetPath("ui_logo_mac.png"),
+  [AssetCatalog.uiStartButton]: assetPath("ui_start_button.svg"),
 
-  [AssetCatalog.shellScreenBezel]: "/assets/shell_screen_bezel.png",
-  [AssetCatalog.shellScreenBezelVector]: "/assets/shell_screen_bezel.svg",
-  [AssetCatalog.shellLogoMac]: "/assets/shell_logo_mac.png",
-  [AssetCatalog.shellDPad]: "/assets/shell_dpad.png",
-  [AssetCatalog.shellButton]: "/assets/shell_button.png",
-  [AssetCatalog.shellButtonPill]: "/assets/shell_button_pill.png",
+  [AssetCatalog.shellScreenBezel]: assetPath("shell_screen_bezel.png"),
+  [AssetCatalog.shellScreenBezelVector]: assetPath("shell_screen_bezel.svg"),
+  [AssetCatalog.shellLogoMac]: assetPath("shell_logo_mac.png"),
+  [AssetCatalog.shellDPad]: assetPath("shell_dpad.png"),
+  [AssetCatalog.shellButton]: assetPath("shell_button.png"),
+  [AssetCatalog.shellButtonPill]: assetPath("shell_button_pill.png"),
 
   [AssetCatalog.backgroundStudio]: null,
   [AssetCatalog.backgroundLights]: null,

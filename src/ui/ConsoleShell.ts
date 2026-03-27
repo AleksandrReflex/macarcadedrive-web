@@ -432,9 +432,10 @@ export class ConsoleShell {
   }
 
   private template(): string {
-    const dpadImage = `/assets/${AssetCatalog.shellDPad}.png`;
-    const bezelImage = `/assets/${AssetCatalog.shellScreenBezel}.png`;
-    const logoImage = `/assets/${AssetCatalog.shellLogoMac}.png`;
+    const baseUrl = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
+    const dpadImage = `${baseUrl}assets/${AssetCatalog.shellDPad}.png`;
+    const bezelImage = `${baseUrl}assets/${AssetCatalog.shellScreenBezel}.png`;
+    const logoImage = `${baseUrl}assets/${AssetCatalog.shellLogoMac}.png`;
 
     return `
       <div class="shell-viewport">
