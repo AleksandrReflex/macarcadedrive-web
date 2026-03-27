@@ -107,8 +107,8 @@ export class Pseudo3DRoadSystem extends Phaser.GameObjects.Container {
     this.groundNode.setAlpha(0);
 
     this.cityNode.setPosition(this.centerX, this.centerY - this.horizonY);
-    const cityWidthFactor = Phaser.Math.Linear(0.88, 0.58, this.mobileInfluence);
-    const cityHeightFactor = Phaser.Math.Linear(0.14, 0.09, this.mobileInfluence);
+    const cityWidthFactor = Phaser.Math.Linear(1.12, 0.58, this.mobileInfluence);
+    const cityHeightFactor = Phaser.Math.Linear(0.17, 0.09, this.mobileInfluence);
     this.cityNode.setDisplaySize(
       width * cityWidthFactor,
       height * cityHeightFactor
@@ -148,8 +148,8 @@ export class Pseudo3DRoadSystem extends Phaser.GameObjects.Container {
 
   private updateCityScale(elapsedTime: number): void {
     const progress = Phaser.Math.Clamp(elapsedTime / 72, 0, 1);
-    const minScale = Phaser.Math.Linear(1, 0.72, this.mobileInfluence);
-    const maxScale = Phaser.Math.Linear(1.16, 0.9, this.mobileInfluence);
+    const minScale = Phaser.Math.Linear(1.03, 0.72, this.mobileInfluence);
+    const maxScale = Phaser.Math.Linear(1.22, 0.9, this.mobileInfluence);
     const scale = Phaser.Math.Linear(minScale, maxScale, progress);
     this.cityNode.setScale(scale);
   }

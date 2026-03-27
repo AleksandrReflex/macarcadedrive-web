@@ -400,6 +400,33 @@ body::after {
   opacity: 0.86;
 }
 
+@media (min-aspect-ratio: 10/16) and (min-width: 900px) {
+  .dpad {
+    width: min(27vw, 176px);
+    max-width: 29%;
+  }
+
+  .action-stack {
+    width: 35%;
+  }
+
+  .round-button {
+    width: 42%;
+  }
+
+  .button-caption {
+    font-size: clamp(10px, 1.2vw, 15px);
+  }
+
+  .pill-button {
+    width: 14.2%;
+    min-width: 64px;
+    max-width: 112px;
+    height: clamp(18px, 3.2vh, 30px);
+    font-size: clamp(9px, 1.2vw, 13px);
+  }
+}
+
 @media (max-aspect-ratio: 9/16) {
   .shell-root {
     padding: max(16px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
