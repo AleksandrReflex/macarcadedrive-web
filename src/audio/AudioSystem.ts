@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 type MusicMode = "none" | "menu" | "race" | "finish";
 type AudioBus = "sfx" | "music";
 
@@ -35,9 +37,13 @@ class AudioSystem {
   private turboNodes: TurboNodes | null = null;
   private turboActive = false;
   private unlockChimePlayed = false;
+  private fallbackToneUrl: string | null = null;
+  private fallbackReady = false;
+  private readonly fallbackPlayers = new Set<HTMLAudioElement>();
 
   unlock(): void {
     this.unlocked = true;
+    this.unlockFallbackAudio();
     const ctx = this.ensureContext(true);
     if (!ctx) {
       return;
@@ -94,6 +100,7 @@ class AudioSystem {
   playUiTap(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.35, 0.22);
       return;
     }
     const t = ctx.currentTime;
@@ -104,6 +111,8 @@ class AudioSystem {
   playStartCue(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.2, 0.25);
+      window.setTimeout(() => this.playFallbackTone(1.45, 0.22), 70);
       return;
     }
     const t = ctx.currentTime;
@@ -115,6 +124,7 @@ class AudioSystem {
   playSelectMove(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.1, 0.14);
       return;
     }
     const t = ctx.currentTime;
@@ -124,6 +134,7 @@ class AudioSystem {
   playConfirm(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.5, 0.22);
       return;
     }
     const t = ctx.currentTime;
@@ -135,6 +146,7 @@ class AudioSystem {
   playPause(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(0.8, 0.18);
       return;
     }
     const t = ctx.currentTime;
@@ -145,6 +157,7 @@ class AudioSystem {
   playResume(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.05, 0.18);
       return;
     }
     const t = ctx.currentTime;
@@ -155,6 +168,7 @@ class AudioSystem {
   playThrottle(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(0.92, 0.16);
       return;
     }
     this.playTone(210, ctx.currentTime, 0.07, { type: "sawtooth", gain: 0.024, toFrequency: 320 });
@@ -163,6 +177,7 @@ class AudioSystem {
   playBrake(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(0.72, 0.18);
       return;
     }
     const t = ctx.currentTime;
@@ -173,6 +188,7 @@ class AudioSystem {
   playSteer(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.08, 0.11);
       return;
     }
     this.playTone(620, ctx.currentTime, 0.03, { type: "square", gain: 0.02 });
@@ -181,6 +197,7 @@ class AudioSystem {
   playCollision(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(0.65, 0.34);
       return;
     }
     const t = ctx.currentTime;
@@ -192,6 +209,7 @@ class AudioSystem {
   playDamageTick(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(0.78, 0.2);
       return;
     }
     this.playTone(180, ctx.currentTime, 0.08, { type: "square", gain: 0.022, toFrequency: 110 });
@@ -200,6 +218,8 @@ class AudioSystem {
   playFinishStinger(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(1.35, 0.24);
+      window.setTimeout(() => this.playFallbackTone(1.7, 0.22), 90);
       return;
     }
     const t = ctx.currentTime;
@@ -211,6 +231,7 @@ class AudioSystem {
   playGameOverStinger(): void {
     const ctx = this.canPlay();
     if (!ctx) {
+      this.playFallbackTone(0.62, 0.27);
       return;
     }
     const t = ctx.currentTime;
@@ -234,6 +255,7 @@ class AudioSystem {
   stopAll(): void {
     this.setTurboActive(false);
     this.stopMusicScheduler();
+    this.stopFallbackPlayers();
   }
 
   private ensureContext(forceCreate = false): AudioContext | null {
@@ -315,6 +337,118 @@ class AudioSystem {
     const t = ctx.currentTime + 0.01;
     this.playTone(988, t, 0.04, { type: "triangle", gain: 0.06 });
     this.playTone(1318, t + 0.04, 0.06, { type: "triangle", gain: 0.06 });
+  }
+
+  private unlockFallbackAudio(): void {
+    if (this.fallbackReady || typeof Audio === "undefined") {
+      return;
+    }
+
+    const probe = new Audio(this.getFallbackToneUrl());
+    probe.preload = "auto";
+    probe.volume = 0.001;
+    probe.muted = false;
+    probe.currentTime = 0;
+
+    const playPromise = probe.play();
+    if (!playPromise) {
+      return;
+    }
+
+    void playPromise
+      .then(() => {
+        probe.pause();
+        probe.currentTime = 0;
+        this.fallbackReady = true;
+      })
+      .catch(() => {
+        // iOS/Safari may reject until a later user gesture.
+      });
+  }
+
+  private playFallbackTone(playbackRate: number, volume: number): void {
+    if (!this.fallbackReady || this.muted || typeof Audio === "undefined") {
+      return;
+    }
+
+    const player = new Audio(this.getFallbackToneUrl());
+    player.preload = "auto";
+    player.volume = Phaser.Math.Clamp(volume, 0, 1);
+    player.playbackRate = Phaser.Math.Clamp(playbackRate, 0.5, 2);
+    player.currentTime = 0;
+
+    const cleanup = () => {
+      player.removeEventListener("ended", cleanup);
+      player.removeEventListener("error", cleanup);
+      this.fallbackPlayers.delete(player);
+    };
+
+    player.addEventListener("ended", cleanup);
+    player.addEventListener("error", cleanup);
+    this.fallbackPlayers.add(player);
+    void player.play().catch(() => cleanup());
+  }
+
+  private stopFallbackPlayers(): void {
+    this.fallbackPlayers.forEach((player) => {
+      player.pause();
+      player.currentTime = 0;
+    });
+    this.fallbackPlayers.clear();
+  }
+
+  private getFallbackToneUrl(): string {
+    if (this.fallbackToneUrl) {
+      return this.fallbackToneUrl;
+    }
+
+    const sampleRate = 22050;
+    const durationSeconds = 0.08;
+    const sampleCount = Math.max(1, Math.floor(sampleRate * durationSeconds));
+    const pcm = new Int16Array(sampleCount);
+
+    for (let i = 0; i < sampleCount; i += 1) {
+      const t = i / sampleRate;
+      const env = Math.max(0, 1 - i / sampleCount) ** 1.6;
+      const tone = Math.sin(2 * Math.PI * 880 * t);
+      const value = tone * env * 0.5;
+      pcm[i] = Math.max(-1, Math.min(1, value)) * 0x7fff;
+    }
+
+    const headerSize = 44;
+    const bytesPerSample = 2;
+    const dataSize = sampleCount * bytesPerSample;
+    const buffer = new ArrayBuffer(headerSize + dataSize);
+    const view = new DataView(buffer);
+
+    this.writeAscii(view, 0, "RIFF");
+    view.setUint32(4, 36 + dataSize, true);
+    this.writeAscii(view, 8, "WAVE");
+    this.writeAscii(view, 12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * bytesPerSample, true);
+    view.setUint16(32, bytesPerSample, true);
+    view.setUint16(34, 16, true);
+    this.writeAscii(view, 36, "data");
+    view.setUint32(40, dataSize, true);
+
+    let offset = headerSize;
+    for (let i = 0; i < sampleCount; i += 1) {
+      view.setInt16(offset, pcm[i], true);
+      offset += bytesPerSample;
+    }
+
+    this.fallbackToneUrl = URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
+    return this.fallbackToneUrl;
+  }
+
+  private writeAscii(view: DataView, offset: number, text: string): void {
+    for (let i = 0; i < text.length; i += 1) {
+      view.setUint8(offset + i, text.charCodeAt(i));
+    }
   }
 
   private playTone(frequency: number, start: number, duration: number, options: ToneOptions = {}): void {
