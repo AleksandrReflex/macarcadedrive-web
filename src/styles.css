@@ -446,6 +446,31 @@ body::after {
     transition: box-shadow 220ms ease-out;
     will-change: auto;
   }
+
+  .dpad {
+    width: min(30vw, 170px);
+    max-width: 31%;
+  }
+
+  .action-stack {
+    width: 37%;
+  }
+
+  .round-button {
+    width: 44%;
+  }
+
+  .button-caption {
+    font-size: clamp(10px, 1.5vw, 14px);
+  }
+
+  .pill-button {
+    width: 15.5%;
+    min-width: 68px;
+    max-width: 116px;
+    height: clamp(20px, 3.4vh, 32px);
+    font-size: clamp(9px, 1.3vw, 13px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
