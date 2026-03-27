@@ -186,12 +186,10 @@ class AudioSystem {
   playThrottle(): void {
     const ctx = this.canPlay();
     if (!ctx) {
-      this.playFallbackTone(0.78, 0.09);
+      this.playFallbackTone(0.92, 0.16);
       return;
     }
-    const t = ctx.currentTime;
-    this.playTone(164, t, 0.07, { type: "triangle", gain: 0.011, toFrequency: 196 });
-    this.playTone(128, t + 0.035, 0.08, { type: "sine", gain: 0.008, toFrequency: 148 });
+    this.playTone(210, ctx.currentTime, 0.07, { type: "sawtooth", gain: 0.024, toFrequency: 320 });
   }
 
   playBrake(): void {
@@ -495,8 +493,8 @@ class AudioSystem {
       return;
     }
     this.fallbackTurboTimer = window.setInterval(() => {
-      this.playFallbackTone(0.78, 0.05);
-    }, 180);
+      this.playFallbackTone(0.9, 0.09);
+    }, 120);
   }
 
   private stopFallbackTurbo(): void {
@@ -643,14 +641,14 @@ class AudioSystem {
     const gain = ctx.createGain();
 
     osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(102, ctx.currentTime);
+    osc.frequency.setValueAtTime(116, ctx.currentTime);
 
     lfo.type = "sine";
-    lfo.frequency.value = 7;
-    lfoGain.gain.value = 8;
+    lfo.frequency.value = 11;
+    lfoGain.gain.value = 14;
 
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.022, ctx.currentTime + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.038, ctx.currentTime + 0.06);
 
     lfo.connect(lfoGain);
     lfoGain.connect(osc.frequency);
