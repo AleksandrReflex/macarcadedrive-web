@@ -530,11 +530,15 @@ body::after {
   }
 
   .pill-button {
-    width: 16%;
-    min-width: 72px;
-    max-width: 120px;
-    height: clamp(20px, 3.5vh, 33px);
-    font-size: clamp(9px, 1.4vw, 13px);
+    width: 14.5%;
+    min-width: 66px;
+    max-width: 108px;
+    height: clamp(18px, 3.1vh, 30px);
+    font-size: clamp(8px, 1.25vw, 12px);
+  }
+
+  .pill-row {
+    bottom: 2.1%;
   }
 }
 
