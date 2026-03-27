@@ -473,6 +473,52 @@ body::after {
   }
 }
 
+@media (pointer: coarse) {
+  .controls-row {
+    top: 73.8%;
+    height: 18.8%;
+  }
+
+  .dpad {
+    width: min(34vw, 196px);
+    max-width: 37%;
+  }
+
+  .dpad-left,
+  .dpad-right {
+    width: 45%;
+    height: 40%;
+    top: 30%;
+  }
+
+  .dpad-down {
+    width: 34%;
+    height: 28%;
+    left: 33%;
+    bottom: 3%;
+  }
+
+  .action-stack {
+    width: 40%;
+  }
+
+  .round-button {
+    width: 48%;
+  }
+
+  .button-caption {
+    font-size: clamp(11px, 1.7vw, 15px);
+  }
+
+  .pill-button {
+    width: 17.5%;
+    min-width: 76px;
+    max-width: 128px;
+    height: clamp(22px, 3.9vh, 36px);
+    font-size: clamp(10px, 1.5vw, 14px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body::before,
   body::after,
