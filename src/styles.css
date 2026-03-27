@@ -475,47 +475,66 @@ body::after {
 
 @media (pointer: coarse) {
   .controls-row {
-    top: 73.8%;
-    height: 18.8%;
+    top: 74.3%;
+    height: 17.9%;
   }
 
   .dpad {
-    width: min(34vw, 196px);
-    max-width: 37%;
+    width: min(31vw, 180px);
+    max-width: 34%;
   }
 
   .dpad-left,
   .dpad-right {
-    width: 45%;
-    height: 40%;
-    top: 30%;
+    width: 42%;
+    height: 37%;
+    top: 31%;
   }
 
   .dpad-down {
-    width: 34%;
-    height: 28%;
-    left: 33%;
-    bottom: 3%;
+    width: 31%;
+    height: 24%;
+    left: 34%;
+    bottom: 5%;
   }
 
   .action-stack {
-    width: 40%;
+    top: 2%;
+    width: 36%;
   }
 
   .round-button {
-    width: 48%;
+    width: 43%;
+  }
+
+  .round-a {
+    top: 25%;
+  }
+
+  .round-b {
+    top: 2%;
   }
 
   .button-caption {
-    font-size: clamp(11px, 1.7vw, 15px);
+    font-size: clamp(9px, 1.4vw, 13px);
+  }
+
+  .caption-a {
+    left: -4%;
+    bottom: 15%;
+  }
+
+  .caption-b {
+    right: -5%;
+    top: 54%;
   }
 
   .pill-button {
-    width: 17.5%;
-    min-width: 76px;
-    max-width: 128px;
-    height: clamp(22px, 3.9vh, 36px);
-    font-size: clamp(10px, 1.5vw, 14px);
+    width: 16%;
+    min-width: 72px;
+    max-width: 120px;
+    height: clamp(20px, 3.5vh, 33px);
+    font-size: clamp(9px, 1.4vw, 13px);
   }
 }
 
