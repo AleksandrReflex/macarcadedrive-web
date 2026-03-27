@@ -40,20 +40,10 @@ class AudioSystem {
   private fallbackToneUrl: string | null = null;
   private fallbackReady = false;
   private readonly fallbackPlayers = new Set<HTMLAudioElement>();
-  private readonly forceFallbackAudio = this.detectForceFallbackAudio();
-  private fallbackMusicTimer: number | null = null;
-  private fallbackMusicStep = 0;
-  private fallbackTurboTimer: number | null = null;
 
   unlock(): void {
     this.unlocked = true;
     this.unlockFallbackAudio();
-    if (this.forceFallbackAudio) {
-      if (this.musicMode !== "none") {
-        this.startFallbackMusicScheduler(true);
-      }
-      return;
-    }
     const ctx = this.ensureContext(true);
     if (!ctx) {
       return;
@@ -92,14 +82,6 @@ class AudioSystem {
 
     if (mode === "none") {
       this.stopMusicScheduler();
-      this.stopFallbackMusicScheduler();
-      return;
-    }
-
-    if (this.forceFallbackAudio) {
-      if (this.unlocked) {
-        this.startFallbackMusicScheduler(true);
-      }
       return;
     }
 
@@ -263,14 +245,6 @@ class AudioSystem {
       return;
     }
     this.turboActive = active;
-    if (this.forceFallbackAudio) {
-      if (active) {
-        this.startFallbackTurbo();
-      } else {
-        this.stopFallbackTurbo();
-      }
-      return;
-    }
     if (active) {
       this.startTurbo();
       return;
@@ -281,8 +255,6 @@ class AudioSystem {
   stopAll(): void {
     this.setTurboActive(false);
     this.stopMusicScheduler();
-    this.stopFallbackMusicScheduler();
-    this.stopFallbackTurbo();
     this.stopFallbackPlayers();
   }
 
@@ -319,9 +291,6 @@ class AudioSystem {
   }
 
   private canPlay(): AudioContext | null {
-    if (this.forceFallbackAudio) {
-      return null;
-    }
     if (!this.unlocked) {
       return null;
     }
@@ -391,12 +360,6 @@ class AudioSystem {
         probe.pause();
         probe.currentTime = 0;
         this.fallbackReady = true;
-        if (this.forceFallbackAudio && this.musicMode !== "none") {
-          this.startFallbackMusicScheduler(true);
-        }
-        if (this.forceFallbackAudio && this.turboActive) {
-          this.startFallbackTurbo();
-        }
       })
       .catch(() => {
         // iOS/Safari may reject until a later user gesture.
@@ -486,84 +449,6 @@ class AudioSystem {
     for (let i = 0; i < text.length; i += 1) {
       view.setUint8(offset + i, text.charCodeAt(i));
     }
-  }
-
-  private startFallbackTurbo(): void {
-    if (!this.fallbackReady || this.fallbackTurboTimer !== null) {
-      return;
-    }
-    this.fallbackTurboTimer = window.setInterval(() => {
-      this.playFallbackTone(0.9, 0.09);
-    }, 120);
-  }
-
-  private stopFallbackTurbo(): void {
-    if (this.fallbackTurboTimer === null) {
-      return;
-    }
-    window.clearInterval(this.fallbackTurboTimer);
-    this.fallbackTurboTimer = null;
-  }
-
-  private startFallbackMusicScheduler(reset: boolean): void {
-    if (!this.fallbackReady || this.musicMode === "none") {
-      return;
-    }
-    if (reset) {
-      this.fallbackMusicStep = 0;
-    }
-    if (this.fallbackMusicTimer !== null) {
-      window.clearInterval(this.fallbackMusicTimer);
-    }
-    const interval = this.fallbackMusicInterval(this.musicMode);
-    this.fallbackMusicTimer = window.setInterval(() => this.tickFallbackMusic(), interval);
-    this.tickFallbackMusic();
-  }
-
-  private stopFallbackMusicScheduler(): void {
-    if (this.fallbackMusicTimer !== null) {
-      window.clearInterval(this.fallbackMusicTimer);
-      this.fallbackMusicTimer = null;
-    }
-    this.fallbackMusicStep = 0;
-  }
-
-  private tickFallbackMusic(): void {
-    if (!this.fallbackReady || this.musicMode === "none") {
-      return;
-    }
-
-    if (this.musicMode === "menu") {
-      const pattern = [1.0, 1.18, 1.34, 1.18, 0.96, 1.12, 1.28, 1.1];
-      const index = this.fallbackMusicStep % pattern.length;
-      this.playFallbackTone(pattern[index], 0.07);
-    } else if (this.musicMode === "race") {
-      const pattern = [0.9, 1.0, 1.08, 1.0, 0.95, 1.04, 1.12, 1.04];
-      const index = this.fallbackMusicStep % pattern.length;
-      this.playFallbackTone(pattern[index], 0.08);
-    } else {
-      const pattern = [1.22, 1.34, 1.46, 1.34];
-      const index = this.fallbackMusicStep % pattern.length;
-      this.playFallbackTone(pattern[index], 0.07);
-    }
-
-    this.fallbackMusicStep += 1;
-  }
-
-  private fallbackMusicInterval(mode: MusicMode): number {
-    if (mode === "menu") {
-      return 240;
-    }
-    if (mode === "race") {
-      return 170;
-    }
-    return 220;
-  }
-
-  private detectForceFallbackAudio(): boolean {
-    const ua = navigator.userAgent;
-    const isIOSDevice = /iP(hone|ad|od)/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    return isIOSDevice;
   }
 
   private playTone(frequency: number, start: number, duration: number, options: ToneOptions = {}): void {
